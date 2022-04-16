@@ -56,6 +56,9 @@ def clean_data(df):
     # Drop duplicates
     df.drop_duplicates(inplace=True)
 
+    # Fix "related" column issue so that its values are binary
+    df.related.replace(2, 1, inplace=True)
+
     return df
 
 
