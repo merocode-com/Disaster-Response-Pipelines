@@ -105,7 +105,7 @@ def build_model():
 
     # Use GridSearchCV to find best parameters 
     parameters = { 'clf__estimator__criterion': ['gini', 'entropy'] }
-    model = GridSearchCV(pipeline, param_grid=parameters, n_jobs=2, verbose=3)
+    model = GridSearchCV(pipeline, param_grid=parameters, verbose=3)
 
     return model
 
