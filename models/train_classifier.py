@@ -1,4 +1,3 @@
-from pyexpat import model
 import sys
 # download necessary NLTK data
 import nltk
@@ -20,6 +19,7 @@ from sklearn.multioutput import MultiOutputClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import classification_report, accuracy_score
+from sklearn.utils import parallel_backend
 
 
 def load_data(database_filepath):
@@ -100,12 +100,12 @@ def build_model():
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)), 
         ('tfidf', TfidfTransformer()),
-        ('clf', MultiOutputClassifier(RandomForestClassifier(random_state=0, n_estimators=200)))
+        ('clf', MultiOutputClassifier(RandomForestClassifier(random_state=0, n_estimators=10)))
     ])
 
     # Use GridSearchCV to find best parameters 
     parameters = { 'clf__estimator__criterion': ['gini', 'entropy'] }
-    model = GridSearchCV(pipeline, param_grid=parameters, verbose=3)
+    model = GridSearchCV(pipeline, param_grid=parameters, verbose=3, n_jobs=3)
 
     return model
 
@@ -173,12 +173,12 @@ def evaluate_model(model, X_test, y_test, category_names):
 
     # Calculate accuracy score
     print('Calculating accuracy score for model...')
-    print(accuracy_score(y_test.values.reshape(-1, 1), y_pred.reshape(-1, 1)))
+    print(accuracy_score(y_test.reshape(-1, 1), y_pred.reshape(-1, 1)))
 
 
 def save_model(model, model_filepath):
     with open(model_filepath, 'wb') as f:
-        pickle.dump(model, f)
+        pickle.dump(model.best_estimator_, f)
 
 
 def main():
@@ -188,19 +188,20 @@ def main():
         X, y, category_names = load_data(database_filepath)
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
         
-        print('Building model...')
-        model = build_model()
+        with parallel_backend('multiprocessing'):
+            print('Building model...')
+            model = build_model()
         
-        print('Training model...\n')
-        model.fit(X_train, y_train)
+            print('Training model...\n')
+            model.fit(X_train, y_train)
         
-        print('Evaluating model...\n')
-        evaluate_model(model, X_test, y_test, category_names)
+            print('Evaluating model...\n')
+            evaluate_model(model, X_test, y_test, category_names)
 
-        print('Saving model...\n    MODEL: {}'.format(model_filepath))
-        save_model(model, model_filepath)
+            print('Saving model...\n    MODEL: {}'.format(model_filepath))
+            save_model(model, model_filepath)
 
-        print('Trained model saved!')
+            print('Trained model saved!')
 
     else:
         print('Please provide the filepath of the disaster messages database '\
