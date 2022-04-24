@@ -5,7 +5,7 @@ This project is meant to implement a complete machine learning pipeline to demon
 
 In this project, real disaster data from [Figure Eight](https://www.figure-eight.com/) is analyzed to build a model for an API that classifies disaster messages.\
 The used dataset contains real messages that were sent during disaster events.\
-A machine learning pipeline is implemented to categorize these messages so that later on every message can be sent to an appropriate disaster relief agency.
+A machine learning pipeline is implemented to categorize these messages so that later on, every message can be sent to an appropriate disaster relief agency.
 
 The project includes a web app where an emergency worker can input a new message and get classification results in several categories.
 
@@ -14,16 +14,22 @@ The project includes a web app where an emergency worker can input a new message
 
 
 ## Let's see it working
-- To run the web app and try out the model prediction\
+- To run the web app and try out the model prediction:
     - Run the following command in the 'app' directory
-        `python run.py`
+    ```shell
+    python run.py
+    ```
     - Then Go to http://localhost:3001/
 
 - To try out the ETL or ML pipelines, run the following commands in the project's root directory.
     - To run ETL pipeline that cleans data and stores it in database
-        `python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/disaster_messages.db`
+    ```python
+    python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/disaster_messages.db
+    ```
     - To run ML pipeline that trains classifier and saves it
-        `python models/train_classifier.py data/disaster_messages.db models/classifier.pkl`
+    ```python
+    python models/train_classifier.py data/disaster_messages.db models/classifier.pkl
+    ```
 
 ## Project Components
 1. ETL (Extract, Transform and Load) Pipeline.\
@@ -47,20 +53,27 @@ The project includes a web app where an emergency worker can input a new message
     - App logic is implemnted in `app/run.py`, where it:
         - Uses plotly to compose a couple of graphs that helps explore the dataset.
         - Loads the saved model from the pkl file and uses it to predict the categories of the message entered via the app.
+4. Directory `notebooks` includes two jupyter notebooks that I used during implementing ETL & ML pipelines.
 
 ## The Model Performance
 Here is the classification report on the final model.
+
 ![Model classification report](media/classification_report.png)
+
 And the accuracy score.
+
 ![Model Accuracy score](media/accuracy_score.png)
 
-I had to use a really low number of estimators of the `RandomForestClassifier` to reduce the file size of the final model so that Github let me upload it to the repo :) 
+I had to use "10" which is a really low number of estimators for the `RandomForestClassifier` to reduce the file size of the final model so that Github let me upload it to the repo :) 
 
-Locally I trained the model setting `n_estimators` to 200, and results were greatly improved.
+Locally I trained the model setting `n_estimators` to "200", and results were greatly improved.
 
 Here is the classification report on the final model.
+
 ![Model classification report](media/classification_report_200.png)
+
 And the accuracy score.
+
 ![Model Accuracy score](media/accuracy_score_200.png)
 
 
