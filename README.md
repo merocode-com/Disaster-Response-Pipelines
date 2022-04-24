@@ -15,7 +15,7 @@ The project includes a web app where an emergency worker can input a new message
 
 ## Let's see it working
 - To run the web app and try out the model prediction:
-    - Run the following command in the 'app' directory
+    - Run the following command in the `app` directory
     ```shell
     python run.py
     ```
@@ -35,17 +35,16 @@ The project includes a web app where an emergency worker can input a new message
 1. ETL (Extract, Transform and Load) Pipeline.\
    Pipline is implemented in `data/process_data.py` script, where it:
     - Merges `data/disaster_messages.csv` and `data/disaster_categories.csv` datasets.
-    - Extract categories and transform them to binary values.
+    - Extracts categories and transforms them to binary values.
     - Cleans data and removes duplicates.
-    - Load cleaned data into SQLite database `data/disaster_messages.db`.
+    - Loads cleaned data into SQLite database `data/disaster_messages.db`.
 2. ML (Machine Learning) Pipeline.\
    Pipline is implemented in `models/train_classifier.py` script, where it:
-    - Loads data from the SQLite database - resulted from ETL pipeline - into feature & target values.
-    - Splits the dataset into training and test sets.
-    - Builds a text processing and machine learning pipeline that performs multi-output classification\ 
-      on the 36 categories in the dataset.
+    - Loads data from the SQLite database - resulted from ETL pipeline - into feature & target/label values.
+    - Splits both features & labels into training and test sets.
+    - Builds a text processing and machine learning pipeline that performs multi-output classification on the 36 categories in the dataset.
     - Trains and tunes the model using GridSearchCV.
-    - Evaluates the resulted model by running prediction on the test set and display a classification report.
+    - Evaluates the resulted model by running prediction on the test set and displaying a classification report.
     - Exports the final model's best estimator as a pickle file `models/classifier.pkl`.
 3. Flask Web App.\
    The app implementaion exists inside `app` directory.
