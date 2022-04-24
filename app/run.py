@@ -1,36 +1,60 @@
 import json
 import plotly
 import pandas as pd
+import re
+import joblib
 
-from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords
+from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 
 from flask import Flask
 from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
-from sklearn.externals import joblib
 from sqlalchemy import create_engine
 
 
 app = Flask(__name__)
 
 def tokenize(text):
+    '''
+    Use nltk to case normalize, lemmatize, and tokenize text.
+    It is used in the machine learning pipeline to vectorize and then apply TF-IDF to the text. 
+
+    Parameters:
+        text: 
+            string of the text needs to be tokenized.
+
+    Returns:
+        tokens:
+            list of cleaned, normalized, lammatized tokens.    
+    '''
+
+    # Remove urls
+    url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+    text = re.sub(url_regex, 'urlplaceholder', text)
+    
+    # Convert to lower case and remove punctuation
+    text = re.sub(r'[^a-zA-Z0-9]', ' ' , text.lower()) 
+    
+    # Tokenize text
     tokens = word_tokenize(text)
+    
+    # Remove stop words
+    tokens = [t for t in tokens if t not in stopwords.words('english')]
+    
+    # lemmatize tokens
     lemmatizer = WordNetLemmatizer()
+    tokens = [lemmatizer.lemmatize(t) for t in tokens]
 
-    clean_tokens = []
-    for tok in tokens:
-        clean_tok = lemmatizer.lemmatize(tok).lower().strip()
-        clean_tokens.append(clean_tok)
-
-    return clean_tokens
+    return tokens
 
 # load data
-engine = create_engine('sqlite:///../data/YourDatabaseName.db')
-df = pd.read_sql_table('YourTableName', engine)
+engine = create_engine('sqlite:///../data/disaster_messages.db')
+df = pd.read_sql_table('messages', engine)
 
 # load model
-model = joblib.load("../models/your_model_name.pkl")
+model = joblib.load("../models/classifier.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model
@@ -42,10 +66,30 @@ def index():
     # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
+
+    categories = df.iloc[:, 4:].sum().sort_values(ascending=False)
     
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
     graphs = [
+        {
+            'data': [
+                Bar(
+                    x=categories.index,
+                    y=categories
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of Message Categories',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Category"
+                }
+            }
+        },
         {
             'data': [
                 Bar(
