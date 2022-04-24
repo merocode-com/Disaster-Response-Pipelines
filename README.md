@@ -23,11 +23,11 @@ The project includes a web app where an emergency worker can input a new message
 
 - To try out the ETL or ML pipelines, run the following commands in the project's root directory.
     - To run ETL pipeline that cleans data and stores it in database
-    ```python
+    ```shell
     python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/disaster_messages.db
     ```
     - To run ML pipeline that trains classifier and saves it
-    ```python
+    ```shell
     python models/train_classifier.py data/disaster_messages.db models/classifier.pkl
     ```
 
