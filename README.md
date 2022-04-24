@@ -54,6 +54,9 @@ The project includes a web app where an emergency worker can input a new message
         - Loads the saved model from the pkl file and uses it to predict the categories of the message entered via the app.
 4. Directory `notebooks` includes two jupyter notebooks that I used during implementing ETL & ML pipelines.
 
+The project repo: https://github.com/merocode-com/Disaster-Response-Pipelines
+
+
 ## The Model Performance
 Here is the classification report on the final model.
 
